@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Попутчики | VK</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- VK Bridge -->
+    <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+    <!-- Иконки -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- Шрифт -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="gl_picture.png">
+</head>
+<body>
+    <!-- Заглушка для тестирования вне VK -->
+    <div id="dev-warning" style="display:none; background:#ffcc00; color:#000; padding:10px; text-align:center; font-size:14px;">
+        🔧 Режим разработки: данные тестовые. В VK будут реальные данные.
+        <button onclick="document.getElementById('dev-warning').style.display='none'" style="margin-left:10px; background:#000; color:#fff; border:none; padding:2px 8px; border-radius:4px;">OK</button>
+    </div>
+
+    <!-- Хедер -->
+    <header class="modern-header">
+        <div class="header-content">
+            <button class="icon-btn menu-btn" id="menuBtn">
+                <span class="material-icons-round">menu</span>
+            </button>
+           
+<div class="app-title" style="display: flex; align-items: center; gap: 12px;">
+    <img src="gl_picture.png" 
+         alt="Логотип Попутчики" 
+         style="width: 36px; height: 36px; border-radius: 8px;">
+    <div>
+        <h1>Попутчики</h1>
+        <p class="subtitle">Путешествуйте вместе</p>
+    </div>
+</div>
+
+            <div class="header-actions">
+                <button class="icon-btn notification-btn" id="notificationBtn">
+                    <span class="material-icons-round">notifications</span>
+                    <span class="notification-badge">3</span>
+                </button>
+                <div class="user-avatar" id="userAvatar">
+                    <span class="material-icons-round">account_circle</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Поиск -->
+        <div class="quick-search">
+            <div class="search-input-wrapper">
+                <span class="material-icons-round search-icon">search</span>
+                <input type="text" class="search-input" placeholder="Например: Оренбург → Акбулак" id="globalSearch">
+                <button class="filter-btn" id="filterBtn">
+                    <span class="material-icons-round">tune</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="main-content" id="appContainer">
+        <!-- Лоадер -->
+        <div class="loading-screen" id="loadingScreen">
+            <div class="loader"></div>
+            <p>Загружаем поездки...</p>
+        </div>
+    </main>
+
+    <!-- Кнопка создания -->
+    <button class="fab" id="createRideBtn">
+        <span class="material-icons-round">add</span>
+    </button>
+
+    <!-- Меню -->
+    <div class="side-menu" id="sideMenu">
+        <div class="menu-overlay" onclick="App.closeMenu()"></div>
+        <div class="menu-content">
+            <div class="menu-header">
+                <div class="user-profile">
+                    <div class="profile-avatar" id="profileAvatar">
+                        <span class="material-icons-round">account_circle</span>
+                    </div>
+                    <div class="profile-info">
+                        <h3 id="userName">Загрузка...</h3>
+                        <p id="userRating">Рейтинг: 0.0</p>
+                    </div>
+                </div>
+                <button class="icon-btn close-menu-btn" onclick="App.closeMenu()">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            
+            <nav class="menu-nav">
+                <a href="#" class="menu-item" onclick="App.navigateTo('main')">
+                    <span class="material-icons-round">home</span>
+                    <span>Главная</span>
+                </a>
+                <a href="#" class="menu-item" onclick="App.navigateTo('my-rides')">
+                    <span class="material-icons-round">directions_car</span>
+                    <span>Мои поездки</span>
+                    <span class="badge">2</span>
+                </a>
+                <a href="#" class="menu-item" onclick="App.navigateTo('favorites')">
+                    <span class="material-icons-round">favorite</span>
+                    <span>Избранное</span>
+                </a>
+                <a href="#" class="menu-item" onclick="App.navigateTo('history')">
+                    <span class="material-icons-round">history</span>
+                    <span>История</span>
+                </a>
+                <a href="#" class="menu-item" onclick="App.navigateTo('profile')">
+                    <span class="material-icons-round">person</span>
+                    <span>Профиль</span>
+                </a>
+                <div class="menu-divider"></div>
+                <a href="#" class="menu-item" onclick="App.showNotification('Настройки в разработке')">
+                    <span class="material-icons-round">settings</span>
+                    <span>Настройки</span>
+                </a>
+                <a href="#" class="menu-item" onclick="App.showNotification('Напишите нам в поддержку VK')">
+                    <span class="material-icons-round">help</span>
+                    <span>Помощь</span>
+                </a>
+            </nav>
+            
+            <div class="menu-footer">
+                <button class="logout-btn" onclick="App.logout()">
+                    <span class="material-icons-round">logout</span>
+                    Выйти
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Фильтры -->
+    <div class="modal filter-modal" id="filterModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Фильтры поездок</h2>
+                <button class="icon-btn close-modal" onclick="App.closeModal('filterModal')">
+                    <span class="material-icons-round">close</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="filter-section">
+                    <h3>Направление</h3>
+                    <div class="filter-tags" id="directionTags"></div>
+                </div>
+                <div class="filter-section">
+                    <h3>Цена, ₽</h3>
+                    <div class="price-range">
+                        <input type="range" min="0" max="5000" value="2000" class="range-slider" id="priceRange">
+                        <div class="range-values">
+                            <span>0</span>
+                            <span id="currentPrice">2000</span>
+                            <span>5000</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-section">
+                    <h3>Время отправления</h3>
+                    <div class="time-filters">
+                        <button class="time-filter active" data-time="any">Любое</button>
+                        <button class="time-filter" data-time="morning">Утро (6:00-12:00)</button>
+                        <button class="time-filter" data-time="day">День (12:00-18:00)</button>
+                        <button class="time-filter" data-time="evening">Вечер (18:00-24:00)</button>
+                        <button class="time-filter" data-time="night">Ночь (0:00-6:00)</button>
+                    </div>
+                </div>
+                <div class="filter-section">
+                    <h3>Количество мест</h3>
+                    <div class="seats-selector">
+                        <button class="seat-btn" data-seats="1">1</button>
+                        <button class="seat-btn" data-seats="2">2</button>
+                        <button class="seat-btn active" data-seats="3">3</button>
+                        <button class="seat-btn" data-seats="4">4</button>
+                        <button class="seat-btn" data-seats="5">5+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="App.resetFilters()">Сбросить</button>
+                <button class="btn-primary" onclick="App.applyFilters()">Применить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Детали поездки -->
+    <div class="modal" id="rideDetailsModal">
+        <div class="modal-content">
+            <!-- Контент будет добавляться динамически -->
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    
+    <!-- VK Initialization -->
+    <script>
+        // Автоматическая инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            App.init();
+        });
+    </script>
+</body>
+</html>
